@@ -40,14 +40,25 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-The script will ask which modules you want:
+The script detects your distro automatically and uses the right package manager:
+
+| Distro | Package manager |
+|---|---|
+| Arch / CachyOS / Manjaro | pacman + paru (AUR) |
+| Debian / Ubuntu / Kali | apt |
+| Fedora / RHEL / CentOS | dnf |
+| openSUSE | zypper |
+
+It will ask which modules you want:
 
 | Module | What it installs |
 |---|---|
-| Core (always) | fish, tmux, neovim, fzf, zoxide, ripgrep, go, python, nodejs |
+| Core (always) | fish, tmux, neovim, fzf, zoxide, bat, eza, ripgrep, go, python, nodejs |
 | Pentest tools | nmap, ffuf, gobuster, feroxbuster, sslscan, sslyze, testssl.sh |
 | Desktop | KDE Plasma, Niri, waybar, alacritty, kitty, fonts, browsers |
-| AUR | postman, thorium, matugen, nirinit |
+| AUR (Arch only) | postman, thorium, matugen, nirinit |
+
+Tools not available in a distro's repos (ffuf, gobuster, feroxbuster on non-Arch) are installed via Go automatically.
 
 Then it automatically:
 - Symlinks all configs to the right places
@@ -56,6 +67,8 @@ Then it automatically:
 - Installs tmux plugins (TPM)
 - Sets up jsintel globally
 - Installs httpx via Go
+- Prompts for git name/email
+- Offers to clone SecLists
 
 ### 3. Copy your VPN config manually
 ```bash

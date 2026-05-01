@@ -47,7 +47,7 @@ The script will ask which modules you want:
 |---|---|
 | Core (always) | fish, tmux, neovim, fzf, zoxide, ripgrep, go, python, nodejs |
 | Pentest tools | nmap, ffuf, gobuster, feroxbuster, sslscan, sslyze, testssl.sh |
-| Desktop | KDE Plasma, Hyprland, waybar, alacritty, kitty, fonts, browsers |
+| Desktop | KDE Plasma, Niri, waybar, alacritty, kitty, fonts, browsers |
 | AUR | postman, thorium, matugen, nirinit |
 
 Then it automatically:

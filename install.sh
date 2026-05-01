@@ -28,7 +28,7 @@ INSTALL_DESKTOP=false
 INSTALL_AUR=false
 
 ask "Install pentest tools (nmap, ffuf, gobuster, sslscan...)?" && INSTALL_PENTEST=true || true
-ask "Install desktop environment (KDE, Hyprland, Waybar...)?"  && INSTALL_DESKTOP=true || true
+ask "Install desktop environment (KDE, Niri, Waybar...)?"     && INSTALL_DESKTOP=true || true
 ask "Install AUR packages (postman, thorium, matugen...)?"     && INSTALL_AUR=true     || true
 
 # ── Install paru (AUR helper) ─────────────────────────────────────────────────

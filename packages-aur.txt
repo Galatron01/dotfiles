@@ -1,0 +1,5 @@
+# AUR packages (installed via paru)
+matugen-bin
+nirinit
+postman-bin
+thorium-browser-bin

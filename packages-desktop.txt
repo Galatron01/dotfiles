@@ -1,0 +1,100 @@
+# Desktop environment — KDE Plasma + Hyprland
+# KDE Plasma
+plasma-desktop
+plasma-nm
+plasma-pa
+plasma-firewall
+plasma-systemmonitor
+plasma-thunderbolt
+plasma-login-manager
+plasma-browser-integration
+kdeplasma-addons
+breeze-gtk
+kde-gtk-config
+kdeconnect
+polkit-kde-agent
+kwallet-pam
+powerdevil
+kwalletmanager
+kscreen
+kinfocenter
+kdialog
+kio-admin
+kcalc
+kate
+dolphin
+ark
+spectacle
+gwenview
+filelight
+partitionmanager
+phonon-qt6-vlc
+kdegraphics-thumbnailers
+ffmpegthumbnailers
+ffmpegthumbs
+# Hyprland / Wayland
+xorg-xwayland
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-wlr
+xdg-user-dirs
+waybar
+wofi
+uwsm
+niri
+wl-clipboard
+wlsunset
+swaync
+cliphist
+copyq
+flameshot
+satty
+brightnessctl
+playerctl
+gum
+# Terminals
+alacritty
+kitty
+konsole
+# Audio
+pipewire-alsa
+pipewire-pulse
+wireplumber
+pavucontrol
+alsa-utils
+alsa-firmware
+alsa-plugins
+# Media
+vlc-plugins-all
+haruna
+gst-libav
+gst-plugin-pipewire
+gst-plugins-bad
+gst-plugins-ugly
+# Fonts
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-jetbrains-mono
+ttf-meslo-nerd
+ttf-dejavu
+ttf-liberation
+ttf-opensans
+ttf-bitstream-vera
+cantarell-fonts
+awesome-terminal-fonts
+# Browsers
+firefox
+brave-bin
+# Themes
+papirus-icon-theme
+ant-dracula-kde-theme-git
+# Other desktop tools
+obsidian
+meld
+glances
+bluetooth
+bluez
+bluez-utils
+bluedevil
+sddm
+flatpak

@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""ffuf output colorizer — Dracula theme"""
+import sys, re
+
+RESET  = '\033[0m'
+BOLD   = '\033[1m'
+
+def rgb(r, g, b): return f'\033[38;2;{r};{g};{b}m'
+
+GREEN  = rgb(80,  250, 123)
+RED    = rgb(255, 85,  85)
+YELLOW = rgb(241, 250, 140)
+ORANGE = rgb(255, 184, 108)
+CYAN   = rgb(139, 233, 253)
+PURPLE = rgb(189, 147, 249)
+PINK   = rgb(255, 121, 198)
+GRAY   = rgb(98,  114, 164)
+FG     = rgb(248, 248, 242)
+
+STATUS_COLOR = {
+    '2': GREEN,
+    '3': CYAN,
+    '4': YELLOW,
+    '5': RED,
+}
+
+def status_color(code):
+    return STATUS_COLOR.get(code[0], ORANGE)
+
+def tag(text, color, bold=False):
+    return f'{color}{BOLD if bold else ""}{text}{RESET}'
+
+def colorize(raw):
+    line = raw.rstrip('\n')
+    s = line.lstrip()
+
+    if not s:
+        return line
+
+    # Banner art (the ffuf logo and underscores)
+    if re.match(r"^[/'_\\s ]{2,}$|^_{10,}$", s):
+        return tag(line, PURPLE)
+
+    # Version line
+    if re.match(r'^v\d+\.\d+', s):
+        return tag(line, PINK, bold=True)
+
+    # Separator line
+    if re.match(r'^_{5,}', s):
+        return tag(line, GRAY)
+
+    # Config / header lines  " :: Key  : value"
+    if re.match(r'^\s*::', line):
+        m = re.match(r'^(\s*::\s*)(\S[^:]*?)(\s*:\s*)(.+)', line)
+        if m:
+            return tag(m.group(1) + m.group(2), PINK) + tag(m.group(3), GRAY) + tag(m.group(4), FG)
+        return tag(line, PINK)
+
+    # Result lines: WORD  [Status: NNN, Size: NNN, Words: NNN, Lines: NNN, Duration: NNms]
+    m = re.match(
+        r'^(\S+)\s+\[Status:\s*(\d+),\s*Size:\s*(\d+),\s*Words:\s*(\d+),\s*Lines:\s*(\d+),\s*Duration:\s*(\S+)\](.*)$',
+        s
+    )
+    if m:
+        word     = m.group(1)
+        code     = m.group(2)
+        size     = m.group(3)
+        words    = m.group(4)
+        lines    = m.group(5)
+        duration = m.group(6)
+        extra    = m.group(7)
+        sc       = status_color(code)
+        return (
+            tag(f'{word:<30}', sc, bold=True) +
+            tag(f'[{code}]', sc) +
+            tag(f' Size:{size}', GRAY) +
+            tag(f' W:{words}', GRAY) +
+            tag(f' L:{lines}', GRAY) +
+            tag(f' {duration}', CYAN) +
+            (tag(extra, FG) if extra else '')
+        )
+
+    # Warning / error
+    if re.match(r'^(WARN|ERR|error|warning)', s, re.IGNORECASE):
+        return tag(line, ORANGE, bold=True)
+
+    return tag(line, FG)
+
+
+for line in sys.stdin:
+    sys.stdout.write(colorize(line) + '\n')
+    sys.stdout.flush()

@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""
+nmap colorizer — Dracula theme.
+Dual-mode: filter (pipe) or wrapper (runs nmap directly, escalates via sudo when needed).
+"""
+import sys, os, re, subprocess
+
+# ── Dracula palette ────────────────────────────────────────────────────────────
+RESET = '\033[0m'
+BOLD  = '\033[1m'
+
+def rgb(r, g, b): return f'\033[38;2;{r};{g};{b}m'
+
+GREEN  = rgb(80,  250, 123)   # #50fa7b  open / host up
+RED    = rgb(255, 85,  85)    # #ff5555  closed / host down
+YELLOW = rgb(241, 250, 140)   # #f1fa8c  filtered
+ORANGE = rgb(255, 184, 108)   # #ffb86c  open|filtered / warnings
+CYAN   = rgb(139, 233, 253)   # #8be9fd  port numbers / headers
+PURPLE = rgb(189, 147, 249)   # #bd93f9  service names
+PINK   = rgb(255, 121, 198)   # #ff79c6  scan report / host line
+GRAY   = rgb(98,  114, 164)   # #6272a4  meta / timing / scripts
+FG     = rgb(248, 248, 242)   # #f8f8f2  default text
+
+STATE_COLOR = {
+    'open':            GREEN,
+    'closed':          RED,
+    'filtered':        YELLOW,
+    'open|filtered':   ORANGE,
+    'closed|filtered': ORANGE,
+    'unfiltered':      CYAN,
+}
+
+# Flags that require root — script will auto-escalate via sudo
+ROOT_FLAGS = {'-sS', '-sU', '-sF', '-sX', '-sN', '-sA', '-sW', '-sM',
+              '-O', '--osscan-guess', '--osscan-limit',
+              '-p-', '--privileged'}
+
+# ── Colorize one line ──────────────────────────────────────────────────────────
+
+def tag(text, color, bold=False):
+    return f'{color}{BOLD if bold else ""}{text}{RESET}'
+
+def colorize(raw):
+    raw = raw.rstrip('\n')
+    s   = raw.lstrip()
+    if not s:
+        return raw
+
+    # Meta / framing
+    if re.match(r'^(Starting Nmap|Nmap done|Read data files|# Nmap|Service Info)', s):
+        return tag(raw, GRAY)
+
+    # Scan report line
+    if s.startswith('Nmap scan report for'):
+        return tag(raw, PINK, bold=True)
+
+    # Host up
+    if re.match(r'^Host is up', s):
+        return tag(raw, GREEN, bold=True)
+
+    # Host down — real nmap says "Host seems down" or "host down" or "Note: Host seems down"
+    if re.match(r'^(Host is down|Host seems down|Note: Host seems down)', s, re.IGNORECASE):
+        return tag(raw, RED, bold=True)
+
+    # Host status with [host down] suffix on report line (handled above, but just in case)
+    if re.search(r'\[host down\]', s, re.IGNORECASE):
+        return tag(raw, RED, bold=True)
+
+    # PORT STATE SERVICE header
+    if re.match(r'^PORT\s+STATE\s+SERVICE', s):
+        return tag(raw, CYAN, bold=True)
+
+    # Port line  e.g.  443/tcp  open  https  nginx 1.18
+    m = re.match(
+        r'^(\d+/\w+)\s+'
+        r'(open\|filtered|closed\|filtered|open|closed|filtered|unfiltered)'
+        r'\s*(.*)',
+        s
+    )
+    if m:
+        indent  = raw[: len(raw) - len(s)]
+        port    = m.group(1)
+        state   = m.group(2)
+        rest    = m.group(3).strip()
+        sc      = STATE_COLOR.get(state, FG)
+        parts   = rest.split(None, 1)
+        service = parts[0] if parts else ''
+        version = parts[1] if len(parts) > 1 else ''
+
+        out  = indent
+        out += tag(f'{port:<16}', CYAN)
+        out += tag(f'{state:<16}', sc, bold=True)
+        if service:
+            out += tag(f'{service:<14}', PURPLE)
+        if version:
+            out += tag(version, FG)
+        return out
+
+    # OS / device detection
+    if re.match(r'^(OS details|Running|OS CPE|Aggressive OS|Device type|Network Distance)', s):
+        return tag(raw, PURPLE)
+
+    # Script output (indented | lines)
+    if re.match(r'^\s*[|\\]', raw):
+        return tag(raw, GRAY)
+
+    # Warnings / errors
+    if re.match(r'^(Warning|WARN|Failed|Error|Note:)', s, re.IGNORECASE):
+        return tag(raw, ORANGE, bold=True)
+
+    # Stats / not-shown / timing
+    if re.match(r'^(Not shown|All \d+|Skipping|rtt|srtt|Initiating|Completed|Discovered)', s):
+        return tag(raw, GRAY)
+
+    return tag(raw, FG)
+
+
+# ── Run nmap via subprocess ────────────────────────────────────────────────────
+
+def run_nmap(args):
+    cmd = ['nmap'] + args
+    if os.geteuid() != 0 and any(a in ROOT_FLAGS for a in args):
+        cmd = ['sudo', 'nmap'] + args
+    try:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                bufsize=1, text=True)
+    except FileNotFoundError:
+        sys.exit('nmap-color: nmap not found in PATH')
+    for line in proc.stdout:
+        sys.stdout.write(colorize(line) + '\n')
+        sys.stdout.flush()
+    sys.exit(proc.wait())
+
+
+# ── Entry point ────────────────────────────────────────────────────────────────
+
+if __name__ == '__main__':
+    # Filter mode when stdin is a pipe and no extra args
+    if not sys.stdin.isatty() and len(sys.argv) == 1:
+        for line in sys.stdin:
+            sys.stdout.write(colorize(line) + '\n')
+            sys.stdout.flush()
+    else:
+        run_nmap(sys.argv[1:])

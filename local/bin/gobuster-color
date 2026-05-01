@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""gobuster output colorizer — Dracula theme"""
+import sys, re
+
+RESET  = '\033[0m'
+BOLD   = '\033[1m'
+
+def rgb(r, g, b): return f'\033[38;2;{r};{g};{b}m'
+
+GREEN  = rgb(80,  250, 123)
+RED    = rgb(255, 85,  85)
+YELLOW = rgb(241, 250, 140)
+ORANGE = rgb(255, 184, 108)
+CYAN   = rgb(139, 233, 253)
+PURPLE = rgb(189, 147, 249)
+PINK   = rgb(255, 121, 198)
+GRAY   = rgb(98,  114, 164)
+FG     = rgb(248, 248, 242)
+
+STATUS_COLOR = {
+    '2': GREEN,
+    '3': CYAN,
+    '4': YELLOW,
+    '5': RED,
+}
+
+def status_color(code):
+    return STATUS_COLOR.get(code[0], ORANGE)
+
+def tag(text, color, bold=False):
+    return f'{color}{BOLD if bold else ""}{text}{RESET}'
+
+def colorize(raw):
+    line = raw.rstrip('\n')
+    s = line.lstrip()
+
+    if not s:
+        return line
+
+    # Banner / separator
+    if s.startswith('==='):
+        return tag(line, PURPLE)
+
+    # Info lines [+] or [!] or [i]
+    if re.match(r'^\[[\+\!\-i]\]', s):
+        if re.match(r'^\[[\!\-]\]', s):
+            return tag(line, ORANGE)
+        return tag(line, PINK)
+
+    # Progress / status lines
+    if re.match(r'^Progress:', s):
+        return tag(line, GRAY)
+
+    # Found result lines — /path (Status: NNN) [Size: NNN] [--> redirect]
+    m = re.match(r'^(/\S*)\s+\(Status:\s*(\d+)\)(.*)', s)
+    if m:
+        path     = m.group(1)
+        code     = m.group(2)
+        rest     = m.group(3)
+        sc       = status_color(code)
+        redirect = ''
+        rm = re.search(r'\[-->\s*([^\]]+)\]', rest)
+        if rm:
+            redirect = f' {tag("-->", GRAY)} {tag(rm.group(1), CYAN)}'
+        size_m = re.search(r'\[Size:\s*(\d+)\]', rest)
+        size = f' {tag("[Size: " + size_m.group(1) + "]", GRAY)}' if size_m else ''
+        return (
+            tag(f'{path:<40}', sc, bold=True) +
+            tag(f'[{code}]', sc) +
+            size +
+            redirect
+        )
+
+    # DNS result lines — hostname.domain  --> IP
+    m = re.match(r'^(\S+)\s*(-->|\|)\s*(.*)', s)
+    if m:
+        return tag(m.group(1), GREEN, bold=True) + f' {tag("-->", GRAY)} ' + tag(m.group(3), CYAN)
+
+    return tag(line, FG)
+
+
+for line in sys.stdin:
+    sys.stdout.write(colorize(line) + '\n')
+    sys.stdout.flush()

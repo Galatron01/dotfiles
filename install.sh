@@ -196,6 +196,38 @@ else
     warn "go not found — install go then run: go install github.com/projectdiscovery/httpx/cmd/httpx@latest"
 fi
 
+# ── pentest shortcut ─────────────────────────────────────────────────────────
+ln -sf "$HOME/.tmux/pentest.sh" "$HOME/.local/bin/pentest"
+chmod +x "$HOME/.local/bin/pentest"
+ok "pentest shortcut linked to ~/.local/bin/pentest"
+
+# ── Git config ────────────────────────────────────────────────────────────────
+step "Git config"
+current_name=$(git config --global user.name 2>/dev/null || true)
+current_email=$(git config --global user.email 2>/dev/null || true)
+if [[ -z "$current_name" ]]; then
+    echo -n "  Git name (e.g. Galatron01): "; read -r git_name
+    git config --global user.name "$git_name"
+fi
+if [[ -z "$current_email" ]]; then
+    echo -n "  Git email: "; read -r git_email
+    git config --global user.email "$git_email"
+fi
+ok "Git config set ($(git config --global user.name) / $(git config --global user.email))"
+
+# ── SecLists ──────────────────────────────────────────────────────────────────
+step "Wordlists"
+if [[ ! -d "$HOME/Documents/SecLists" ]]; then
+    if ask "Clone SecLists to ~/Documents/SecLists? (~1GB, takes a few minutes)"; then
+        git clone --depth 1 https://github.com/danielmiessler/SecLists.git "$HOME/Documents/SecLists"
+        ok "SecLists cloned"
+    else
+        warn "Skipped — clone later with: git clone https://github.com/danielmiessler/SecLists.git ~/Documents/SecLists"
+    fi
+else
+    ok "SecLists already present"
+fi
+
 # ── Create client directories ─────────────────────────────────────────────────
 step "Creating pentest directories"
 mkdir -p "$HOME/Documents/Clients"

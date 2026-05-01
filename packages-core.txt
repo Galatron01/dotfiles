@@ -2,6 +2,7 @@
 base
 base-devel
 git
+curl
 wget
 less
 which
@@ -11,6 +12,7 @@ sudo
 openssh
 networkmanager
 iwd
+openvpn
 networkmanager-openvpn
 xl2tpd
 fish

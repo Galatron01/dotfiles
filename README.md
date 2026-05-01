@@ -1,4 +1,5 @@
 # dotfiles
+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
 
 Pentest workstation setup — fish shell, tmux, neovim, oh-my-posh, colour-coded security tools, and a one-command pentest session launcher.
 

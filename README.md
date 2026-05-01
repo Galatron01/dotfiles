@@ -7,9 +7,32 @@ Pentest workstation setup — fish shell, tmux, neovim, oh-my-posh, colour-coded
 ## Fresh Machine Setup
 
 ### 1. Clone the repo
+
+**Option A — HTTPS (easiest, no SSH key needed):**
 ```bash
- git clone git@github.com:Galatron01/dotfiles.git ~/dotfiles
-  cd ~/dotfiles
+git clone https://github.com/Galatron01/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+```
+When prompted: username = `Galatron01`, password = your GitHub Personal Access Token (not your account password).
+
+To get a token: github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → tick **repo** → copy it → paste as password.
+
+---
+
+**Option B — SSH:**
+
+Run this on the new machine first:
+```bash
+ssh-keygen -t ed25519 -C "kevin@stargazerdigital.co.uk" -f ~/.ssh/id_ed25519 -N ""
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+cat ~/.ssh/id_ed25519.pub
+```
+Copy the output → github.com → Settings → SSH and GPG keys → New SSH key → paste → save.
+
+Then clone:
+```bash
+git clone git@github.com:Galatron01/dotfiles.git ~/dotfiles
+cd ~/dotfiles
 ```
 
 ### 2. Run the installer

@@ -8,8 +8,8 @@ Pentest workstation setup — fish shell, tmux, neovim, oh-my-posh, colour-coded
 
 ### 1. Clone the repo
 ```bash
-git clone git@github.com:YOURUSERNAME/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+ git clone git@github.com:Galatron01/dotfiles.git ~/dotfiles
+  cd ~/dotfiles
 ```
 
 ### 2. Run the installer

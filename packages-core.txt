@@ -18,9 +18,12 @@ tmux
 fzf
 zoxide
 ripgrep
+bat
+eza
 rsync
 pv
 duf
+tty-clock
 neovim
 vim
 nano

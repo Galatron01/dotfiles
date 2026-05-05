@@ -13,6 +13,9 @@ alias nmapfull='sudo nmap -sS -sU -V --min-rate=1000 -oN'
 # Vi key bindings
 fish_vi_key_bindings
 
+# Tab after "cd " opens fzf directory picker
+bind -M insert \t __cd_fzf_tab
+
 # Cursor shape per mode: line in insert, block in normal, underline in replace
 function fish_vi_cursor
     switch $fish_bind_mode

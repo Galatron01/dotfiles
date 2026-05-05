@@ -184,7 +184,7 @@ debian)
         openssh-client network-manager openvpn network-manager-openvpn \
         fish tmux fzf zoxide ripgrep bat rsync pv \
         neovim vim nano btop htop \
-        python3 python3-pip python3-defusedxml \
+        wl-clipboard python3 python3-pip python3-defusedxml python3-gi gir1.2-gtk-4.0 \
         nodejs npm unrar unzip cron logrotate dnsutils ufw golang-go
     # eza: in apt on Ubuntu 23.10+, otherwise install via cargo or binary
     if ! pkg_try eza; then
@@ -318,13 +318,22 @@ if $INSTALL_DESKTOP; then
             xwayland xdg-user-dirs \
             waybar wofi wl-clipboard wlsunset \
             flameshot brightnessctl playerctl \
-            alacritty kitty \
+            kitty \
             pipewire pipewire-pulse wireplumber pavucontrol alsa-utils \
             vlc gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav \
             fonts-noto fonts-noto-color-emoji fonts-jetbrains-mono \
             fonts-dejavu fonts-liberation papirus-icon-theme \
-            firefox-esr flatpak bluez
-        pkg_try niri || warn "niri not in apt — install via cargo or GitHub release"
+            firefox-esr flatpak bluez python3-gi gir1.2-gtk-4.0
+        # alacritty not in apt — install via GitHub release
+        if ! command -v alacritty &>/dev/null; then
+            gh_release "alacritty/alacritty" "Alacritty-v.*-x86_64-unknown-linux-gnu.tar.gz" "$HOME/.local/bin/alacritty" \
+                || warn "alacritty install failed — install manually from https://github.com/alacritty/alacritty/releases"
+        fi
+        # niri not in apt — install via GitHub release
+        if ! command -v niri &>/dev/null; then
+            gh_release "YaLTeR/niri" "niri-x86_64-unknown-linux-gnu.tar.gz" "$HOME/.local/bin/niri" \
+                || warn "niri not available — install manually from https://github.com/YaLTeR/niri/releases"
+        fi
         ;;
     fedora|rhel)
         pkg_install \
@@ -397,11 +406,18 @@ link "$DOTFILES/config/fish/functions/nmap.fish"              "$HOME/.config/fis
 link "$DOTFILES/config/fish/functions/gobuster.fish"          "$HOME/.config/fish/functions/gobuster.fish"
 link "$DOTFILES/config/fish/functions/ffuf.fish"              "$HOME/.config/fish/functions/ffuf.fish"
 link "$DOTFILES/config/fish/functions/ports.fish"             "$HOME/.config/fish/functions/ports.fish"
+link "$DOTFILES/config/fish/functions/foreach.fish"           "$HOME/.config/fish/functions/foreach.fish"
+link "$DOTFILES/config/fish/functions/pick.fish"              "$HOME/.config/fish/functions/pick.fish"
+link "$DOTFILES/config/fish/functions/payload.fish"           "$HOME/.config/fish/functions/payload.fish"
+link "$DOTFILES/config/fish/functions/test_wildcard_dns.fish" "$HOME/.config/fish/functions/test_wildcard_dns.fish"
+link "$DOTFILES/config/fish/functions/__cd_fzf_tab.fish"      "$HOME/.config/fish/functions/__cd_fzf_tab.fish"
 link "$DOTFILES/config/ohmyposh/zen.toml"                     "$HOME/.config/ohmyposh/zen.toml"
 link "$DOTFILES/local/bin/nmap-color"                         "$HOME/.local/bin/nmap-color"
 link "$DOTFILES/local/bin/gobuster-color"                     "$HOME/.local/bin/gobuster-color"
 link "$DOTFILES/local/bin/ffuf-color"                         "$HOME/.local/bin/ffuf-color"
-chmod +x "$HOME/.local/bin/nmap-color" "$HOME/.local/bin/gobuster-color" "$HOME/.local/bin/ffuf-color"
+link "$DOTFILES/local/bin/payload-manager"                    "$HOME/.local/bin/payload-manager"
+link "$DOTFILES/local/share/applications/payload-manager.desktop" "$HOME/.local/share/applications/payload-manager.desktop"
+chmod +x "$HOME/.local/bin/nmap-color" "$HOME/.local/bin/gobuster-color" "$HOME/.local/bin/ffuf-color" "$HOME/.local/bin/payload-manager"
 
 ln -sf "$HOME/.tmux/pentest.sh" "$HOME/.local/bin/pentest"
 chmod +x "$HOME/.local/bin/pentest"

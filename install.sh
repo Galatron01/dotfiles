@@ -422,6 +422,17 @@ chmod +x "$HOME/.local/bin/nmap-color" "$HOME/.local/bin/gobuster-color" "$HOME/
 ln -sf "$HOME/.tmux/pentest.sh" "$HOME/.local/bin/pentest"
 chmod +x "$HOME/.local/bin/pentest"
 
+# Obsidian Dracula theme (snippet only — vault path may differ per user)
+OBSIDIAN_VAULT="${OBSIDIAN_VAULT:-$HOME/Documents/keving}"
+if [ -d "$OBSIDIAN_VAULT/.obsidian" ]; then
+    mkdir -p "$OBSIDIAN_VAULT/.obsidian/snippets"
+    link "$DOTFILES/config/obsidian/snippets/dracula-pro.css" "$OBSIDIAN_VAULT/.obsidian/snippets/dracula-pro.css"
+    link "$DOTFILES/config/obsidian/appearance.json"          "$OBSIDIAN_VAULT/.obsidian/appearance.json"
+    ok "Obsidian Dracula theme linked"
+else
+    warn "Obsidian vault not found at $OBSIDIAN_VAULT — set OBSIDIAN_VAULT=/path/to/vault and re-run"
+fi
+
 ok "All dotfiles linked"
 
 # ── oh-my-posh ────────────────────────────────────────────────────────────────

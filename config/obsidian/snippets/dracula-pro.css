@@ -1,0 +1,237 @@
+/* ============================================================
+   Dracula theme for Obsidian 1.x
+   ============================================================ */
+
+:root {
+  /* Dracula palette */
+  --drc-bg:         #282a36;
+  --drc-bg-alt:     #21222c;
+  --drc-surface:    #44475a;
+  --drc-comment:    #6272a4;
+  --drc-fg:         #f8f8f2;
+  --drc-selection:  #44475a;
+  --drc-purple:     #bd93f9;
+  --drc-pink:       #ff79c6;
+  --drc-orange:     #ffb86c;
+  --drc-yellow:     #f1fa8c;
+  --drc-green:      #50fa7b;
+  --drc-cyan:       #8be9fd;
+  --drc-red:        #ff5555;
+}
+
+.theme-dark {
+  /* Backgrounds */
+  --background-primary:          var(--drc-bg);
+  --background-primary-alt:      var(--drc-surface);
+  --background-secondary:        var(--drc-bg-alt);
+  --background-secondary-alt:    var(--drc-bg-alt);
+  --background-modifier-border:  var(--drc-surface);
+  --background-modifier-form-field: var(--drc-bg-alt);
+  --background-modifier-hover:   rgba(68, 71, 90, 0.5);
+  --background-modifier-active-hover: rgba(68, 71, 90, 0.7);
+  --background-modifier-error:   var(--drc-red);
+  --background-modifier-success: var(--drc-green);
+
+  /* Text */
+  --text-normal:     var(--drc-fg);
+  --text-muted:      var(--drc-comment);
+  --text-faint:      #4d5066;
+  --text-on-accent:  var(--drc-bg);
+  --text-error:      var(--drc-red);
+  --text-success:    var(--drc-green);
+  --text-selection:  rgba(68, 71, 90, 0.8);
+  --text-accent:     var(--drc-purple);
+  --text-accent-hover: var(--drc-pink);
+
+  /* Headings */
+  --h1-color: var(--drc-purple);
+  --h2-color: var(--drc-orange);
+  --h3-color: var(--drc-green);
+  --h4-color: var(--drc-red);
+  --h5-color: var(--drc-yellow);
+  --h6-color: var(--drc-cyan);
+
+  /* Interactive */
+  --interactive-normal:        var(--drc-surface);
+  --interactive-hover:         var(--drc-comment);
+  --interactive-accent:        var(--drc-purple);
+  --interactive-accent-hsl:    265, 89%, 78%;
+  --interactive-accent-hover:  var(--drc-pink);
+
+  /* Code */
+  --code-background:  var(--drc-bg-alt);
+  --code-normal:      var(--drc-fg);
+  --code-comment:     var(--drc-comment);
+  --code-function:    var(--drc-green);
+  --code-important:   var(--drc-orange);
+  --code-keyword:     var(--drc-pink);
+  --code-operator:    var(--drc-pink);
+  --code-property:    var(--drc-orange);
+  --code-punctuation: var(--drc-fg);
+  --code-string:      var(--drc-yellow);
+  --code-tag:         var(--drc-green);
+  --code-value:       var(--drc-purple);
+
+  /* Inline code */
+  --code-size: 0.9em;
+
+  /* Links */
+  --link-color:              var(--drc-cyan);
+  --link-color-hover:        var(--drc-pink);
+  --link-unresolved-color:   var(--drc-comment);
+  --link-external-color:     var(--drc-cyan);
+  --link-external-color-hover: var(--drc-pink);
+
+  /* Tags */
+  --tag-color:             var(--drc-green);
+  --tag-background:        rgba(80, 250, 123, 0.12);
+  --tag-border-color:      rgba(80, 250, 123, 0.3);
+  --tag-color-hover:       var(--drc-fg);
+  --tag-background-hover:  rgba(80, 250, 123, 0.25);
+
+  /* Blockquote */
+  --blockquote-border-color:       var(--drc-purple);
+  --blockquote-background-color:   rgba(189, 147, 249, 0.07);
+  --blockquote-color:              var(--drc-fg);
+
+  /* Checkbox */
+  --checkbox-color:           var(--drc-purple);
+  --checkbox-color-hover:     var(--drc-pink);
+  --checkbox-border-color:    var(--drc-comment);
+  --checkbox-marker-color:    var(--drc-bg);
+
+  /* Callouts */
+  --callout-default:  var(--drc-purple);
+  --callout-info:     var(--drc-cyan);
+  --callout-todo:     var(--drc-cyan);
+  --callout-warning:  var(--drc-orange);
+  --callout-error:    var(--drc-red);
+  --callout-success:  var(--drc-green);
+  --callout-question: var(--drc-yellow);
+  --callout-tip:      var(--drc-green);
+  --callout-bug:      var(--drc-red);
+
+  /* Tables */
+  --table-border-color:           var(--drc-surface);
+  --table-header-background:      var(--drc-bg-alt);
+  --table-header-background-hover: var(--drc-surface);
+  --table-row-background-hover:   rgba(68, 71, 90, 0.4);
+  --table-column-alt-background:  rgba(33, 34, 44, 0.5);
+
+  /* Graph */
+  --graph-line:   var(--drc-comment);
+  --graph-node:   var(--drc-comment);
+  --graph-node-unresolved: var(--drc-surface);
+  --graph-node-focused: var(--drc-purple);
+  --graph-node-tag: var(--drc-green);
+  --graph-node-attachment: var(--drc-orange);
+
+  /* Misc */
+  --scrollbar-thumb-bg:      var(--drc-surface);
+  --bold-color:              var(--drc-orange);
+  --italic-color:            var(--drc-green);
+  --hr-color:                var(--drc-surface);
+  --highlight-mix-blend-mode: lighten;
+  --flashing-background:     rgba(189, 147, 249, 0.2);
+  --nav-item-color:          var(--drc-comment);
+  --nav-item-color-hover:    var(--drc-fg);
+  --nav-item-color-active:   var(--drc-fg);
+  --nav-item-background-hover: rgba(68, 71, 90, 0.4);
+  --nav-item-background-active: rgba(68, 71, 90, 0.6);
+  --ribbon-background:       var(--drc-bg-alt);
+  --ribbon-background-collapsed: var(--drc-bg-alt);
+  --status-bar-background:   var(--drc-bg-alt);
+  --titlebar-background:     var(--drc-bg-alt);
+  --titlebar-background-focused: var(--drc-bg);
+  --modal-background:        var(--drc-bg);
+  --prompt-background:       var(--drc-bg-alt);
+  --input-background:        var(--drc-bg-alt);
+  --indentation-guide-color: var(--drc-surface);
+  --indentation-guide-color-active: var(--drc-comment);
+  --tab-background-active:   var(--drc-bg);
+  --tab-text-color-active:   var(--drc-fg);
+  --tab-text-color:          var(--drc-comment);
+  --tab-text-color-hover:    var(--drc-fg);
+  --tab-outline-color:       var(--drc-surface);
+  --workspace-background-translucent: rgba(40, 42, 54, 0.85);
+}
+
+/* ── Headings ─────────────────────────────────────────────── */
+
+.markdown-rendered h1, .cm-header-1 { color: var(--drc-purple) !important; }
+.markdown-rendered h2, .cm-header-2 { color: var(--drc-orange) !important; }
+.markdown-rendered h3, .cm-header-3 { color: var(--drc-green)  !important; }
+.markdown-rendered h4, .cm-header-4 { color: var(--drc-red)    !important; }
+.markdown-rendered h5, .cm-header-5 { color: var(--drc-yellow) !important; }
+.markdown-rendered h6, .cm-header-6 { color: var(--drc-cyan)   !important; }
+
+/* ── Inline code ──────────────────────────────────────────── */
+
+.markdown-rendered code,
+.cm-s-obsidian .cm-inline-code {
+  background-color: var(--drc-bg-alt) !important;
+  color: var(--drc-orange) !important;
+  border-radius: 4px;
+  padding: 1px 4px;
+}
+
+/* ── Code blocks ──────────────────────────────────────────── */
+
+.markdown-rendered pre,
+.markdown-rendered pre code {
+  background-color: var(--drc-bg-alt) !important;
+  color: var(--drc-fg) !important;
+}
+
+/* ── Bold / italic ────────────────────────────────────────── */
+
+strong, .cm-strong { color: var(--drc-orange) !important; }
+em,     .cm-em     { color: var(--drc-green)  !important; }
+
+/* ── Links ────────────────────────────────────────────────── */
+
+a, .internal-link { color: var(--drc-cyan) !important; }
+a:hover, .internal-link:hover { color: var(--drc-pink) !important; }
+
+/* ── Blockquotes ──────────────────────────────────────────── */
+
+.markdown-rendered blockquote {
+  border-left: 3px solid var(--drc-purple);
+  background-color: rgba(189, 147, 249, 0.07);
+  color: var(--drc-fg);
+  font-style: italic;
+}
+
+/* ── Highlights ───────────────────────────────────────────── */
+
+mark, .cm-highlight {
+  background-color: var(--drc-yellow) !important;
+  color: var(--drc-bg) !important;
+}
+
+/* ── Tags ─────────────────────────────────────────────────── */
+
+.tag, .cm-hashtag {
+  color: var(--drc-green) !important;
+  background-color: rgba(80, 250, 123, 0.12) !important;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ── Search highlights ────────────────────────────────────── */
+
+.suggestion-highlight { color: var(--drc-green) !important; }
+.is-selected         { background-color: var(--drc-surface) !important; }
+
+/* ── Tables ───────────────────────────────────────────────── */
+
+th { border: 1px solid var(--drc-surface) !important; background-color: var(--drc-bg-alt); }
+td { border: 1px solid var(--drc-surface) !important; }
+thead { border-bottom: 2px solid var(--drc-surface); }
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--drc-bg-alt); }
+::-webkit-scrollbar-thumb { background: var(--drc-surface); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--drc-comment); }

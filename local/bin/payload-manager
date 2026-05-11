@@ -210,7 +210,10 @@ class PayloadWindow(Gtk.ApplicationWindow):
             f.write("\n".join(payloads) + "\n")
 
     def on_payload_clicked(self, listbox, row):
-        subprocess.run(["wl-copy", row.payload])
+        if os.environ.get("WAYLAND_DISPLAY"):
+            subprocess.run(["wl-copy", row.payload])
+        else:
+            subprocess.run(["xclip", "-selection", "clipboard"], input=row.payload.encode())
         short = row.payload[:60] + "..." if len(row.payload) > 60 else row.payload
         self.status.set_text(f"Copied: {short}")
         self.status.add_css_class("copied")

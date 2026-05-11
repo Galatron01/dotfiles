@@ -2,7 +2,10 @@
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
-import os, subprocess
+import json
+import os
+import shutil
+import subprocess
 
 PAYLOADS_DIR = os.path.expanduser("~/payloads")
 os.makedirs(PAYLOADS_DIR, exist_ok=True)
@@ -14,7 +17,6 @@ class PayloadWindow(Gtk.ApplicationWindow):
         self.set_default_size(900, 600)
         self.current_category = None
 
-        # CSS
         css = Gtk.CssProvider()
         css.load_from_string("""
             .payload-row { padding: 6px 10px; font-family: monospace; }
@@ -67,9 +69,30 @@ class PayloadWindow(Gtk.ApplicationWindow):
         self.cat_title = Gtk.Label(label="Select a category", xalign=0)
         self.cat_title.set_hexpand(True)
         self.cat_title.add_css_class("heading")
+
+        import_btn = Gtk.Button(label="Import")
+        import_btn.connect("clicked", self.on_import)
+
+        export_pop = Gtk.Popover()
+        export_inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        export_inner.set_margin_start(4); export_inner.set_margin_end(4)
+        export_inner.set_margin_top(4);   export_inner.set_margin_bottom(4)
+        export_pop.set_child(export_inner)
+        btn_exp_txt = Gtk.Button(label="Current category (.txt)")
+        btn_exp_txt.connect("clicked", lambda w: (export_pop.popdown(), self.on_export_txt()))
+        btn_exp_json = Gtk.Button(label="All categories (.json)")
+        btn_exp_json.connect("clicked", lambda w: (export_pop.popdown(), self.on_export_json()))
+        export_inner.append(btn_exp_txt)
+        export_inner.append(btn_exp_json)
+        export_btn = Gtk.MenuButton(label="Export", popover=export_pop)
+
         self.search = Gtk.SearchEntry(placeholder_text="Filter payloads...")
         self.search.connect("search-changed", self.on_search)
-        top_bar.append(self.cat_title); top_bar.append(self.search)
+
+        top_bar.append(self.cat_title)
+        top_bar.append(import_btn)
+        top_bar.append(export_btn)
+        top_bar.append(self.search)
         right.append(top_bar)
 
         self.payload_list = Gtk.ListBox()
@@ -80,7 +103,6 @@ class PayloadWindow(Gtk.ApplicationWindow):
         payload_scroll.set_child(self.payload_list)
         right.append(payload_scroll)
 
-        # Add payload input
         add_box = Gtk.Box(spacing=6)
         self.payload_entry = Gtk.Entry(hexpand=True, placeholder_text="New payload — press Enter to add")
         self.payload_entry.connect("activate", self.on_add_payload)
@@ -223,6 +245,106 @@ class PayloadWindow(Gtk.ApplicationWindow):
         if not query:
             return True
         return query in row.payload.lower()
+
+    # ── Import ───────────────────────────────────────────────────
+
+    def on_import(self, btn):
+        self._import_dialog = Gtk.FileChooserNative(
+            title="Import Payloads",
+            transient_for=self,
+            action=Gtk.FileChooserAction.OPEN,
+        )
+        f = Gtk.FileFilter()
+        f.set_name("Payload files (*.txt, *.json)")
+        f.add_pattern("*.txt")
+        f.add_pattern("*.json")
+        self._import_dialog.add_filter(f)
+        self._import_dialog.connect("response", self._on_import_response)
+        self._import_dialog.show()
+
+    def _on_import_response(self, dialog, response):
+        if response == Gtk.ResponseType.ACCEPT:
+            path = dialog.get_file().get_path()
+            if path.endswith(".json"):
+                self._import_json(path)
+            else:
+                self._import_txt(path)
+
+    def _import_txt(self, path):
+        if not self.current_category:
+            self.status.set_text("Select a category first, then import")
+            return
+        added = 0
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    self.add_payload_row(line)
+                    added += 1
+        self.save_payloads()
+        self.status.set_text(f"Imported {added} payloads from {os.path.basename(path)}")
+
+    def _import_json(self, path):
+        with open(path) as f:
+            data = json.load(f)
+        count = 0
+        for category, payloads in data.items():
+            cat_path = os.path.join(PAYLOADS_DIR, f"{category}.txt")
+            existing = set()
+            if os.path.exists(cat_path):
+                with open(cat_path) as cf:
+                    existing = {line.strip() for line in cf if line.strip()}
+            with open(cat_path, "a") as cf:
+                for p in payloads:
+                    if p not in existing:
+                        cf.write(p + "\n")
+                        count += 1
+        self.load_categories()
+        self.status.set_text(f"Imported {count} new payloads across {len(data)} categories")
+
+    # ── Export ───────────────────────────────────────────────────
+
+    def on_export_txt(self):
+        if not self.current_category:
+            self.status.set_text("Select a category first")
+            return
+        self._export_txt_dialog = Gtk.FileChooserNative(
+            title="Export Category",
+            transient_for=self,
+            action=Gtk.FileChooserAction.SAVE,
+        )
+        self._export_txt_dialog.set_current_name(f"{self.current_category}.txt")
+        self._export_txt_dialog.connect("response", self._on_export_txt_response)
+        self._export_txt_dialog.show()
+
+    def _on_export_txt_response(self, dialog, response):
+        if response == Gtk.ResponseType.ACCEPT:
+            path = dialog.get_file().get_path()
+            shutil.copy2(os.path.join(PAYLOADS_DIR, f"{self.current_category}.txt"), path)
+            self.status.set_text(f"Exported to {os.path.basename(path)}")
+
+    def on_export_json(self):
+        self._export_json_dialog = Gtk.FileChooserNative(
+            title="Export All Categories",
+            transient_for=self,
+            action=Gtk.FileChooserAction.SAVE,
+        )
+        self._export_json_dialog.set_current_name("payloads.json")
+        self._export_json_dialog.connect("response", self._on_export_json_response)
+        self._export_json_dialog.show()
+
+    def _on_export_json_response(self, dialog, response):
+        if response == Gtk.ResponseType.ACCEPT:
+            path = dialog.get_file().get_path()
+            data = {}
+            for fname in sorted(os.listdir(PAYLOADS_DIR)):
+                if fname.endswith(".txt"):
+                    cat = fname[:-4]
+                    with open(os.path.join(PAYLOADS_DIR, fname)) as f:
+                        data[cat] = [line.strip() for line in f if line.strip()]
+            with open(path, "w") as f:
+                json.dump(data, f, indent=2)
+            self.status.set_text(f"Exported {len(data)} categories to {os.path.basename(path)}")
 
 
 class PayloadApp(Gtk.Application):

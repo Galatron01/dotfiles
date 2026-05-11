@@ -417,6 +417,8 @@ link "$DOTFILES/local/bin/gobuster-color"                     "$HOME/.local/bin/
 link "$DOTFILES/local/bin/ffuf-color"                         "$HOME/.local/bin/ffuf-color"
 link "$DOTFILES/local/bin/payload-manager"                    "$HOME/.local/bin/payload-manager"
 link "$DOTFILES/local/share/applications/payload-manager.desktop" "$HOME/.local/share/applications/payload-manager.desktop"
+link "$DOTFILES/local/share/icons/hicolor/scalable/apps/payload-manager.svg" \
+     "$HOME/.local/share/icons/hicolor/scalable/apps/payload-manager.svg"
 chmod +x "$HOME/.local/bin/nmap-color" "$HOME/.local/bin/gobuster-color" "$HOME/.local/bin/ffuf-color" "$HOME/.local/bin/payload-manager"
 
 ln -sf "$HOME/.tmux/pentest.sh" "$HOME/.local/bin/pentest"
